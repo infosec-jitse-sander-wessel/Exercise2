@@ -1,3 +1,5 @@
+import org.apache.commons.cli.CommandLine;
+
 /**
  * Created by wessel on 9/9/16.
  */
@@ -6,7 +8,7 @@ class Controller {
     private static boolean withNonAlphabeticalCharacters = false;
     private static String key;
 
-    Controller(String[] args) {
+    Controller(CommandLine args) {
         for (String arg : args) {
             if (arg.equals("-o")) {
                 withNonAlphabeticalCharacters = true;
