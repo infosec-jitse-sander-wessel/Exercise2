@@ -1,4 +1,6 @@
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.BasicParser;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Options;
 
 /**
  * Created by wessel on 9/9/16.
@@ -12,18 +14,7 @@ public class Main {
                 "Sets the mode of the program to keeping characters that can not be encrypted from the input in the output");
         options.addOption("h", "help", false, "Display this help page");
 
-        try {
-            CommandLine commandLine = parser.parse(options, args);
-
-            Controller controller = new Controller(commandLine);
-            controller.run();
-        } catch (ParseException e) {
-            System.out.println("Incorrect arguments:");
-//            print help page
-            HelpFormatter helpFormatter = new HelpFormatter();
-            helpFormatter.printHelp("[-h] [-o] [-d] <key>",
-                    "This application will take the standard input and encrypt or decrypt it using a substitution cypher.",
-                    options, "");
-        }
+        Controller controller = new Controller(parser, options, args);
+        controller.run();
     }
 }

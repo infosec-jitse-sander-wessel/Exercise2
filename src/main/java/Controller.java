@@ -1,47 +1,51 @@
-import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.*;
 
 /**
  * Created by wessel on 9/9/16.
  */
 class Controller {
-    private static boolean decripting = false;
-    private static boolean withNonAlphabeticalCharacters = false;
-    private static String key;
+    private CommandLine commandLine;
+    private Options options;
+    private String key;
 
-    Controller(CommandLine args) {
-        for (String arg : args) {
-            if (arg.equals("-o")) {
-                withNonAlphabeticalCharacters = true;
+    Controller(CommandLineParser parser, Options options, String[] args) {
+        this.options = options;
+
+        try {
+            CommandLine commandLine = parser.parse(options, args);
+
+            if (commandLine.getArgs().length != 1) {
+                printHelpPage();
+                return;
             }
-            if (arg.equals("-d")) {
-                decripting = true;
-            }
-        }
 
-        if (args.length == 0) {
-            System.err.println("incorrect user input. should be of the format: Usage: substitution [-o] [-d] <mapping> \n"
-                    + "For more help type substitution help");
-            return;
+            this.commandLine = commandLine;
+            key = commandLine.getArgs()[0];
+        } catch (ParseException e) {
+            System.out.println("Incorrect arguments:");
+            printHelpPage();
         }
+    }
 
-        key = args[args.length - 1];
+    private void printHelpPage() {
+        HelpFormatter helpFormatter = new HelpFormatter();
+        helpFormatter.printHelp("[-h] [-o] [-d] <key>",
+                "This application will take the standard input and encrypt or decrypt it using a substitution cypher.",
+                options, "");
     }
 
     void run() {
-        if (key.equals("help")) {
-            System.out.println("Usage: substitution [-o] [-d] mapping\n" +
-                    "Where:\n" +
-                    "   -o: keep non-letters as is, honor letter casing\n" +
-                    "   -d: decrypt\n" +
-                    "   mapping: 26 letter char-mapping\n" +
-                    "            or an int-value");
+        if (key.equals("help") || commandLine.hasOption("h")) {
+            printHelpPage();
             return;
         }
 
-        if (withNonAlphabeticalCharacters) {
+        if (commandLine.hasOption("o")) {
             //delete unused chars and decapitalize
         }
 
-        StringBuilder result = decripting ? SubstitutionTool.decrypt(System.in) : SubstitutionTool.encrypt(System.in);
+        //todo: normalize key
+
+        StringBuilder result = commandLine.hasOption("d") ? SubstitutionTool.decrypt(System.in, key) : SubstitutionTool.encrypt(System.in, key);
     }
 }
