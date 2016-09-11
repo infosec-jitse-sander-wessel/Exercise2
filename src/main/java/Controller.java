@@ -8,7 +8,7 @@ class Controller {
     private Options options;
     private String key;
 
-    Controller(CommandLineParser parser, Options options, String[] args) {
+    Controller(CommandLineParser parser, Options options, String[] args) throws ParseException {
         this.options = options;
 
         try {
@@ -24,6 +24,7 @@ class Controller {
         } catch (ParseException e) {
             System.out.println("Incorrect arguments:");
             printHelpPage();
+            throw e;
         }
     }
 
