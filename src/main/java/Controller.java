@@ -48,6 +48,7 @@ class Controller {
         //todo: normalize key
 
         StringBuilder result = commandLine.hasOption("d") ? SubstitutionTool.decrypt(System.in, key) : SubstitutionTool.encrypt(System.in, key);
+
         System.out.println(result.toString());
     }
 }
