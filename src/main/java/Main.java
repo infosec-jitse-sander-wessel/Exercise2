@@ -1,7 +1,6 @@
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 
 /**
  * Created by wessel on 9/9/16.
@@ -18,7 +17,7 @@ public class Main {
         try {
             Controller controller = new Controller(parser, options, args);
             controller.run();
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
