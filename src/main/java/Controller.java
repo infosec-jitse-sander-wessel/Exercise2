@@ -1,45 +1,65 @@
+import org.apache.commons.cli.*;
+
 /**
  * Created by wessel on 9/9/16.
  */
 class Controller {
-    private static boolean decripting = false;
-    private static boolean withNonAlphabeticalCharacters = false;
-    private static String key;
+    private CommandLine commandLine;
+    private Options options;
+    private String key;
 
-    Controller(String[] args) {
-        for (String arg : args) {
-            if (arg.equals("-o")) {
-                withNonAlphabeticalCharacters = true;
+    Controller(String[] args) throws ParseException {
+        this.options = getOptions();
+        CommandLineParser parser = new BasicParser();
+
+        try {
+            CommandLine commandLine = parser.parse(options, args);
+
+            if (commandLine.getArgs().length != 1) {
+                printHelpPage();
+                throw new ParseException("The encryption key and only the encryption key should be passed as a non flag argument.");
             }
-            if (arg.equals("-d")) {
-                decripting = true;
-            }
-        }
 
-        if (args.length == 0) {
-            System.err.println("incorrect user input. should be of the format: Usage: substitution [-o] [-d] <mapping> \n"
-                    + "For more help type substitution help");
-            return;
+            this.commandLine = commandLine;
+            key = commandLine.getArgs()[0];
+        } catch (ParseException e) {
+            System.out.println("Incorrect arguments:");
+            printHelpPage();
+            throw e;
         }
+    }
 
-        key = args[args.length - 1];
+    private static Options getOptions() {
+        Options options = new Options();
+        options.addOption("d", "decrypt", false, "Sets the mode of the program to decrypting");
+        options.addOption("o", "original", false,
+                "Sets the mode of the program to keeping characters that can not be encrypted from the input in the output");
+        options.addOption("h", "help", false, "Display this help page");
+        return options;
+    }
+
+    private void printHelpPage() {
+        HelpFormatter helpFormatter = new HelpFormatter();
+        helpFormatter.printHelp("[-h] [-o] [-d] <key>",
+                "This application will take the standard input and encrypt or decrypt it using a substitution cypher.",
+                options, "");
     }
 
     void run() {
-        if (key.equals("help")) {
-            System.out.println("Usage: substitution [-o] [-d] mapping\n" +
-                    "Where:\n" +
-                    "   -o: keep non-letters as is, honor letter casing\n" +
-                    "   -d: decrypt\n" +
-                    "   mapping: 26 letter char-mapping\n" +
-                    "            or an int-value");
+        if (key.equals("help") || commandLine.hasOption("h")) {
+            printHelpPage();
             return;
         }
 
-        if (withNonAlphabeticalCharacters) {
+        if (commandLine.hasOption("o")) {
             //delete unused chars and decapitalize
         }
 
-        StringBuilder result = decripting ? SubstitutionTool.decrypt(System.in) : SubstitutionTool.encrypt(System.in);
+
+        //todo: normalize key
+
+        StringBuilder result = commandLine.hasOption("d") ? SubstitutionTool.decrypt(System.in, key) : SubstitutionTool.encrypt(System.in, key);
+
+        System.out.println(result.toString());
     }
 }
