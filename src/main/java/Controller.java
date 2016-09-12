@@ -8,8 +8,9 @@ class Controller {
     private Options options;
     private String key;
 
-    Controller(CommandLineParser parser, Options options, String[] args) throws ParseException {
-        this.options = options;
+    Controller(String[] args) throws ParseException {
+        this.options = getOptions();
+        CommandLineParser parser = new BasicParser();
 
         try {
             CommandLine commandLine = parser.parse(options, args);
@@ -28,6 +29,15 @@ class Controller {
         }
     }
 
+    private static Options getOptions() {
+        Options options = new Options();
+        options.addOption("d", "decrypt", false, "Sets the mode of the program to decrypting");
+        options.addOption("o", "original", false,
+                "Sets the mode of the program to keeping characters that can not be encrypted from the input in the output");
+        options.addOption("h", "help", false, "Display this help page");
+        return options;
+    }
+
     private void printHelpPage() {
         HelpFormatter helpFormatter = new HelpFormatter();
         helpFormatter.printHelp("[-h] [-o] [-d] <key>",
@@ -44,6 +54,7 @@ class Controller {
         if (commandLine.hasOption("o")) {
             //delete unused chars and decapitalize
         }
+
 
         //todo: normalize key
 
