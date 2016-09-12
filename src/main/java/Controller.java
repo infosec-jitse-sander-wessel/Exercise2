@@ -16,7 +16,7 @@ class Controller {
 
             if (commandLine.getArgs().length != 1) {
                 printHelpPage();
-                throw new IllegalArgumentException("The encryption key and only the encryption key should be passed as a non flag argument.");
+                throw new ParseException("The encryption key and only the encryption key should be passed as a non flag argument.");
             }
 
             this.commandLine = commandLine;
