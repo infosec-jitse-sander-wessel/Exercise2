@@ -55,11 +55,7 @@ class Controller {
             //delete unused chars and decapitalize
         }
 
-
-        //todo: normalize key
-
-        StringBuilder result = commandLine.hasOption("d") ? SubstitutionTool.decrypt(System.in, key) : SubstitutionTool.encrypt(System.in, key);
-
-        System.out.println(result.toString());
+        //StringBuilder result = decripting ? substitutionTool.decrypt(System.in, key) : substitutionTool.encrypt(System.in, key);
+        substitutionTool.crypter(System.in, key, withNonAlphabeticalCharacters, decripting);
     }
 }
