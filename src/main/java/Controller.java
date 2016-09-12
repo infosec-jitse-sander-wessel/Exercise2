@@ -55,7 +55,9 @@ class Controller {
             //delete unused chars and decapitalize
         }
 
+
         //StringBuilder result = decripting ? substitutionTool.decrypt(System.in, key) : substitutionTool.encrypt(System.in, key);
-        substitutionTool.crypter(System.in, key, withNonAlphabeticalCharacters, decripting);
+        SubstitutionTool substitutionTool = new SubstitutionTool();
+        substitutionTool.crypter(System.in, key, commandLine.hasOption("o"), commandLine.hasOption('d'));
     }
 }
