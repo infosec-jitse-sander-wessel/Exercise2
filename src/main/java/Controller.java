@@ -8,7 +8,7 @@ class Controller {
     private Options options;
     private String key;
 
-    Controller(String[] args) throws ParseException {
+    Controller(String[] args) {
         this.options = getOptions();
         CommandLineParser parser = new BasicParser();
 
@@ -16,7 +16,6 @@ class Controller {
             CommandLine commandLine = parser.parse(options, args);
 
             if (commandLine.getArgs().length != 1) {
-                printHelpPage();
                 throw new ParseException("The encryption key and only the encryption key should be passed as a non flag argument.");
             }
 
@@ -25,15 +24,13 @@ class Controller {
         } catch (ParseException e) {
             System.out.println("Incorrect arguments:");
             printHelpPage();
-            throw e;
         }
     }
 
     private static Options getOptions() {
         Options options = new Options();
-        options.addOption("d", "decrypt", false, "Sets the mode of the program to decrypting");
-        options.addOption("o", "original", false,
-                "Sets the mode of the program to keeping characters that can not be encrypted from the input in the output");
+        options.addOption("d", "decrypt", false, "decrypt");
+        options.addOption("o", "original", false, "keep non-letters as is, honor letter casing");
         options.addOption("h", "help", false, "Display this help page");
         return options;
     }
@@ -41,7 +38,13 @@ class Controller {
     private void printHelpPage() {
         HelpFormatter helpFormatter = new HelpFormatter();
         helpFormatter.printHelp("[-h] [-o] [-d] <key>",
-                "This application will take the standard input and encrypt or decrypt it using a substitution cypher.",
+                "En/Decrypts stdin to stdout. Only letters are encrypted,\n" +
+                        "all other characters are silently ignored, unless -o was\n" +
+                        "specified, in which case they are used as-is.\n" +
+                        "When -o is specified, letter casing is honored, otherwise all\n" +
+                        "letters are converted to lower-case letters.\n" +
+                        "Use an int-value to to a letter shift (% 26, 0: a = a)\n" +
+                        "Shift 3 is the classical Caesar encryption.",
                 options, "");
     }
 
