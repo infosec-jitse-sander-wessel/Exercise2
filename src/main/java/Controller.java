@@ -51,6 +51,8 @@ class Controller {
             return;
         }
 
+        System.out.println("o: " + commandLine.hasOption('o') + " d: " + commandLine.hasOption('d') + " key: " + key);
+
         new SubstitutionTool(key)
                 .setHonourCaps(commandLine.hasOption('o'))
                 .setDecrypting(commandLine.hasOption('d'))

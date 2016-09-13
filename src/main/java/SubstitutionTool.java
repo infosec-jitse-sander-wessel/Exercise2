@@ -34,6 +34,7 @@ class SubstitutionTool {
         for (int character : key.toCharArray()) {
             mapping.put(from, character);
             mapping.put(from + TO_CAPS, character + TO_CAPS);
+            from++;
         }
     }
 
