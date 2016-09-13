@@ -38,11 +38,21 @@ class SubstitutionTool {
     }
 
     private boolean isValidKey(String key) {
-        return key.length() != 26 && uniqueCharacters();
+        return key.length() != 26 && uniqueCharacters(key);
     }
 
-    private boolean uniqueCharacters() {
-        return false;
+    private boolean uniqueCharacters(String key) {
+        String lowerCaseKey = key.toLowerCase();
+        boolean[] charactersExist = new boolean[26];
+        for (int index = 0; index < lowerCaseKey.length(); index++) {
+            int code = lowerCaseKey.charAt(index) - 'a';
+            if (!charactersExist[code]) {
+                charactersExist[code] = true;
+            } else {
+                return false;
+            }
+        }
+        return true;
     }
 
     private String shift(int shift, String key) {
