@@ -53,26 +53,19 @@ class Controller {
             return;
         }
 
-        if (commandLine.hasOption("o")) {
-            //delete unused chars and decapitalize
-        }
+        SubstitutionTool substitutionTool = new SubstitutionTool(key, commandLine.hasOption("o"), commandLine.hasOption('d'));
 
-        processInput();
-
-
-        //StringBuilder result = decripting ? substitutionTool.decrypt(System.in, key) : substitutionTool.encrypt(System.in, key);
-//        SubstitutionTool substitutionTool = new SubstitutionTool();
-//        substitutionTool.crypter(System.in, key, commandLine.hasOption("o"), commandLine.hasOption('d'));
+        processInput(substitutionTool);
     }
 
-    private void processInput() {
+    private void processInput(SubstitutionTool tool) {
         Scanner s = null;
         try {
             s = new Scanner(System.in);
 
-            while(s.hasNextLine()){
+            while (s.hasNextLine()) {
                 String input = s.nextLine();
-
+                System.out.println(tool.start(input));
             }
 
         } finally {
