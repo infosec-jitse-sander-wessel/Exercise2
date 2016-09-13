@@ -88,7 +88,10 @@ class SubstitutionTool {
 
     public void run(InputStream in) {
         try (Scanner scanner = new Scanner(in)) {
-            scanner.forEachRemaining(this::mapLine);
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                mapLine(line);
+            }
         }
     }
 
@@ -101,7 +104,6 @@ class SubstitutionTool {
                 .reduce((left, right) -> left + right)
                 .map(this::oModeMapper)
                 .ifPresent(System.out::println);
-
     }
 
     private String oModeMapper(String line) {
