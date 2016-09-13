@@ -1,3 +1,7 @@
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.InputStream;
 import java.util.Scanner;
 
@@ -5,130 +9,99 @@ import java.util.Scanner;
  * Created by wessel on 9/9/16.
  */
 class SubstitutionTool {
-
     private final static int START = (int) 'a';
     private final static int END = (int) 'z';
-    private final static int CAPTITAL_START = (int) 'A';
-    private final static int CAPTITAL_END = (int) 'Z';
-    private boolean decryptMode;
+    private final static int CAPITAL_START = (int) 'A';
+    private final static int CAPITAL_END = (int) 'Z';
+    private static final int TO_CAPS = CAPITAL_START - START;
+    private static final String ALPHABET = "abcdefghijklmnopqrstuvwxyz";
     private boolean oMode;
+    private BiMap<Integer, Integer> mapping = HashBiMap.create(52);
 
-    public void crypter(InputStream in, String key, boolean oMode, boolean decryptMode){
-        this.oMode = oMode;
-        this.decryptMode = decryptMode;
-        if (decryptMode) {
-            System.out.println("decrypt: ");
-        } else {
-            System.out.println("encrypt: ");
+    public SubstitutionTool(String key) {
+        createMap(key);
+    }
+
+    private void createMap(String key) {
+        if (StringUtils.isNumeric(key)) {
+            key = shift(Integer.parseInt(key), ALPHABET);
         }
-        String str;
-        try (Scanner s = new Scanner(in)) {
-            while (s.hasNext()) {
-                if(!oMode){
-                    str = s.next().toLowerCase();
-                } else{
-                    str = s.next();
-                }
-                if (key.length() <= 2 && key.length() != 0) {
-                    try {
-                        int shift = Integer.parseInt(key);
-                        System.out.println(this.shift(shift, str));
-                    } catch (NumberFormatException e) {
-                        System.err.println("Invalid key");
-                    }
-                } else if (key.length() == 26) {
-                    System.out.println(map(convertToIntegers(str), key));
-                }
-
-            }
+        if (isValidKey(key)) {
+            throw new IllegalArgumentException("Key should be exactly 26 characters long, key is: " + key);
+        }
+        key = key.toLowerCase();
+        int from = START;
+        for (int character : key.toCharArray()) {
+            mapping.put(from, character);
+            mapping.put(from + TO_CAPS, character + TO_CAPS);
         }
     }
 
-    private String shift(int shift, String str) {
-        int length = str.length();
-        String crypted = "";
-        for (int i = 0; i < length; i++) {
-            crypted += shiftChar(str.charAt(i), shift);
-        }
-        return crypted;
+    private boolean isValidKey(String key) {
+        return key.length() != 26 && uniqueCharacters();
     }
 
-    private char shiftChar(int c, int offset) {
-        int start;
-        int end;
-        if ((c - START) < 0) {
-            start = CAPTITAL_START;
-            end = CAPTITAL_END;
-        } else {
-            start = START;
-            end = END;
-        }
-        int reset = end - start;
-        if (this.decryptMode) {
-            c = c - offset;
-            if (c < start) {
-                c = c + reset;
-            }
-        } else {
-            c = c + offset;
-            if (c > end) {
-                c = c - reset;
-            }
-        }
-        return (char) c;
+    private boolean uniqueCharacters() {
+        return false;
+    }
+
+    private String shift(int shift, String key) {
+        return key.chars()
+                .map(character -> shiftChar(character, shift))
+                .mapToObj(character -> (char) character)
+                .map(Object::toString)
+                .reduce((left, right) -> left + right)
+                .orElse("");
+    }
+
+    private int shiftChar(int character, int offset) {
+        return ((character - START + offset) % 26) + START;
     }
 
 
     private boolean isLetter(int character) {
-        return ((character >= START && character <= END) || (character >= CAPTITAL_START && character <= CAPTITAL_END));
+        return ((character >= START && character <= END) || (character >= CAPITAL_START && character <= CAPITAL_END));
     }
 
-    private String map(int[] ascii, String key) {
-        String keyCapitals = key.toUpperCase();
-        int length = ascii.length;
-        String encrypted = "";
+    public SubstitutionTool setHonourCaps(boolean oMode) {
+        this.oMode = oMode;
+        return this;
+    }
 
-        for (int i = 0; i < length; i++) {
-            if (isLetter(ascii[i])) {
-                if ((ascii[i] - START) >= 0) {
-                    if (decryptMode) {
-                        encrypted += (char) (key.indexOf(ascii[i]) + START);
-                    } else {
-                        encrypted += key.charAt(ascii[i] - START);
-                    }
-                } else {
-                    if (decryptMode) {
-                        encrypted += (char) (keyCapitals.indexOf(ascii[i]) - CAPTITAL_START);
-                    } else {
-                        encrypted += keyCapitals.charAt(ascii[i] - CAPTITAL_START);
-                    }
-
-                }
-            } else if (!oMode) {
-                encrypted += (char) ascii[i];
-            }
+    public SubstitutionTool setDecrypting(boolean decrypting) {
+        if (decrypting) {
+            mapping = mapping.inverse();
         }
-        return encrypted;
+        return this;
     }
 
-    private int[] convertToIntegers(String str) {
-        int length = str.length();
-        int[] array = new int[length];
-        for (int i = 0; i < length; i++) {
-            array[i] = (int) str.charAt(i);
+    public void run(InputStream in) {
+        try (Scanner scanner = new Scanner(in)) {
+            scanner.forEachRemaining(this::mapLine);
         }
-        return array;
     }
 
-    public SubstitutionTool setHonourCaps(boolean o) {
-        return null;
+    private void mapLine(String line) {
+        line.chars()
+                .filter(this::shouldStay)
+                .map(this::mapCharacter)
+                .mapToObj(character -> (char) character)
+                .map(Object::toString)
+                .reduce((left, right) -> left + right)
+                .map(this::oModeMapper)
+                .ifPresent(System.out::println);
+
     }
 
-    public SubstitutionTool setDecrypting(boolean d) {
-        return null;
+    private String oModeMapper(String line) {
+        return oMode ? line : line.toLowerCase();
     }
 
-    public void run() {
+    private int mapCharacter(int character) {
+        return mapping.containsKey(character) ? mapping.get(character) : character;
+    }
 
+    private boolean shouldStay(int character) {
+        return isLetter(character) || oMode;
     }
 }
