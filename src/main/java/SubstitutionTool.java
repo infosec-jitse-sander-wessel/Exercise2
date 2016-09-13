@@ -16,16 +16,13 @@ class SubstitutionTool {
     public void crypter(InputStream in, String key, boolean oMode, boolean decryptMode){
         this.oMode = oMode;
         this.decryptMode = decryptMode;
-        Scanner s = null;
         if (decryptMode) {
             System.out.println("decrypt: ");
         } else {
             System.out.println("encrypt: ");
         }
         String str;
-        try {
-            s = new Scanner(in);
-
+        try (Scanner s = new Scanner(in)) {
             while (s.hasNext()) {
                 if(!oMode){
                     str = s.next().toLowerCase();
@@ -43,10 +40,6 @@ class SubstitutionTool {
                     System.out.println(map(convertToIntegers(str), key));
                 }
 
-            }
-        } finally {
-            if (s != null) {
-                s.close();
             }
         }
     }
