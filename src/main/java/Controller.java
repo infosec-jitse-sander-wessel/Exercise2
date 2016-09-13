@@ -51,7 +51,9 @@ class Controller {
             return;
         }
 
-        System.out.println("o: " + commandLine.hasOption('o') + " d: " + commandLine.hasOption('d') + " key: " + key);
+        System.out.println("running substitution with options -o: "
+                + commandLine.hasOption('o') + ", -d: "
+                + commandLine.hasOption('d') + "and key: " + key);
 
         new SubstitutionTool(key)
                 .setHonourCaps(commandLine.hasOption('o'))
