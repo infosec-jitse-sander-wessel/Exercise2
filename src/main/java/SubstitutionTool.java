@@ -13,7 +13,12 @@ class SubstitutionTool {
     private boolean decryptMode;
     private boolean oMode;
 
-    public void crypter(InputStream in, String key, boolean oMode, boolean decryptMode){
+    public SubstitutionTool(String key, boolean oMode, boolean decryptMode) {
+        this.oMode = oMode;
+        this.decryptMode = decryptMode;
+    }
+
+    public void crypter(InputStream in, String key, boolean oMode, boolean decryptMode) {
         this.oMode = oMode;
         this.decryptMode = decryptMode;
         Scanner s = null;
@@ -27,9 +32,9 @@ class SubstitutionTool {
             s = new Scanner(in);
 
             while (s.hasNext()) {
-                if(!oMode){
+                if (!oMode) {
                     str = s.next().toLowerCase();
-                } else{
+                } else {
                     str = s.next();
                 }
                 if (key.length() <= 2 && key.length() != 0) {
@@ -127,4 +132,11 @@ class SubstitutionTool {
         return array;
     }
 
+    private Crypter getCrypter(String key) {
+        if (ShiftCrypter.isShiftKey(key)) {
+            return new ShiftCrypter(key, oMode);
+        } else if (MappingCrypter.isValidMapping(key)) {
+            return new MappingCrypter(key, oMode);
+        }
+    }
 }

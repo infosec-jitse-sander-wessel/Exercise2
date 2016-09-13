@@ -1,5 +1,7 @@
 import org.apache.commons.cli.*;
 
+import java.util.Scanner;
+
 /**
  * Created by wessel on 9/9/16.
  */
@@ -55,9 +57,28 @@ class Controller {
             //delete unused chars and decapitalize
         }
 
+        processInput();
+
 
         //StringBuilder result = decripting ? substitutionTool.decrypt(System.in, key) : substitutionTool.encrypt(System.in, key);
-        SubstitutionTool substitutionTool = new SubstitutionTool();
-        substitutionTool.crypter(System.in, key, commandLine.hasOption("o"), commandLine.hasOption('d'));
+//        SubstitutionTool substitutionTool = new SubstitutionTool();
+//        substitutionTool.crypter(System.in, key, commandLine.hasOption("o"), commandLine.hasOption('d'));
+    }
+
+    private void processInput() {
+        Scanner s = null;
+        try {
+            s = new Scanner(System.in);
+
+            while(s.hasNextLine()){
+                String input = s.nextLine();
+
+            }
+
+        } finally {
+            if (s != null) {
+                s.close();
+            }
+        }
     }
 }
