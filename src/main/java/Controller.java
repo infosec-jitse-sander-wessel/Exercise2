@@ -51,13 +51,13 @@ class Controller {
             return;
         }
 
-        if (commandLine.hasOption("o")) {
-            //delete unused chars and decapitalize
-        }
+        new SubstitutionTool()
+                .setHonourCaps(commandLine.hasOption('o'))
+                .setDecrypting(commandLine.hasOption('d'))
+                .run();
 
-
-        //StringBuilder result = decripting ? substitutionTool.decrypt(System.in, key) : substitutionTool.encrypt(System.in, key);
-        SubstitutionTool substitutionTool = new SubstitutionTool();
-        substitutionTool.crypter(System.in, key, commandLine.hasOption("o"), commandLine.hasOption('d'));
+//        //StringBuilder result = decripting ? substitutionTool.decrypt(System.in, key) : substitutionTool.encrypt(System.in, key);
+//        SubstitutionTool substitutionTool = new SubstitutionTool();
+//        substitutionTool.crypter(System.in, key, commandLine.hasOption("o"), commandLine.hasOption('d'));
     }
 }

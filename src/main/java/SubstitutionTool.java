@@ -120,4 +120,15 @@ class SubstitutionTool {
         return array;
     }
 
+    public SubstitutionTool setHonourCaps(boolean o) {
+        return null;
+    }
+
+    public SubstitutionTool setDecrypting(boolean d) {
+        return null;
+    }
+
+    public void run() {
+
+    }
 }
