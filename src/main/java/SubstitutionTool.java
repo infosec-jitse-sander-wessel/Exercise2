@@ -96,14 +96,15 @@ class SubstitutionTool {
     }
 
     private void mapLine(String line) {
-        line.chars()
+        String outLine = line.chars()
                 .filter(this::shouldStay)
                 .map(this::mapCharacter)
                 .mapToObj(character -> (char) character)
                 .map(Object::toString)
                 .reduce((left, right) -> left + right)
                 .map(this::oModeMapper)
-                .ifPresent(System.out::println);
+                .orElse("");
+        System.out.println(outLine);
     }
 
     private String oModeMapper(String line) {
